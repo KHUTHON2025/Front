@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
   normalCard: {
     backgroundColor: "#FFFFFF",
     borderLeftWidth: 4,
-    borderLeftColor: "#FFCC00",
+    borderLeftColor: "#ffc229",
   },
   alertCard: {
     backgroundColor: "#FFEBEE",

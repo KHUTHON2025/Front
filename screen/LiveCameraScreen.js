@@ -3,9 +3,10 @@
 import { useState, useEffect } from "react"
 import { StyleSheet, View, Text, TouchableOpacity, SafeAreaView, StatusBar, Image } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
+import WebView from "react-native-webview"
 
 export default function LiveCameraScreen({ route, navigation }) {
-  const { hiveNumber } = route.params
+  const { hiveNumber, liveUrl } = route.params
   const [currentTime, setCurrentTime] = useState(new Date())
 
   // Update the timestamp every second
