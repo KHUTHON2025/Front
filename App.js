@@ -37,7 +37,9 @@ export default function App() {
         setMessages((prevMessages) => [...prevMessages, newNotification]);
 
         if (eventData == "Detected") {
-          Alert.alert("⚠️ 말벌 감지", eventData, [{ text: "확인" }]);
+//           Alert.alert("⚠️ 말벌 감지", eventData, [{ text: "확인" }]);
+setModalVisible(true);
+          setModalMessage("⚠️ 말벌 감지", eventData);
         }
       } catch (err) {
         console.warn("데이터 파싱 실패, err");
