@@ -3,9 +3,10 @@
 import { useState, useEffect } from "react"
 import { StyleSheet, View, Text, TouchableOpacity, SafeAreaView, StatusBar, Image } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
+import WebView from "react-native-webview"
 
 export default function LiveCameraScreen({ route, navigation }) {
-  const { hiveNumber } = route.params
+  const { hiveNumber, liveUrl } = route.params
   const [currentTime, setCurrentTime] = useState(new Date())
 
   // Update the timestamp every second
@@ -33,10 +34,10 @@ export default function LiveCameraScreen({ route, navigation }) {
       <View style={styles.videoContainer}>
         {/* Placeholder for video feed */}
         <View style={styles.videoFeed}>
-          <Image
-            source={{ uri: "https://via.placeholder.com/350x250/000000/FFCC00?text=Live+Camera+Feed" }}
+          <WebView
+            source={{ uri: liveUrl }}
             style={styles.videoPlaceholder}
-            resizeMode="cover"
+            resizeMode="contain"
           />
         </View>
 

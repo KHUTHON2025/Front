@@ -28,15 +28,16 @@ export default function App() {
 
     eventSource.onmessage = (event) => {
       try {
-        const eventData = JSON.parse(event.data);
+        const eventData = event.data;
         const newNotification = {
           id: Date.now().toString(),
-          message: eventData.message,
+          message: eventData,
         };
+        console.log(eventData);
         setMessages((prevMessages) => [...prevMessages, newNotification]);
 
-        if (eventData.message.toLowerCase().includes("detected")) {
-          Alert.alert("⚠️ 말벌 감지", eventData.message, [{ text: "확인" }]);
+        if (eventData == "Detected") {
+          Alert.alert("⚠️ 말벌 감지", eventData, [{ text: "확인" }]);
         }
       } catch (err) {
         console.warn("데이터 파싱 실패, err");
