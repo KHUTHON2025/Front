@@ -1,5 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Dimensions, ActivityIndicator, ScrollView, StyleSheet, Alert, Platform, Modal, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  Dimensions,
+  ActivityIndicator,
+  ScrollView,
+  StyleSheet,
+  Alert,
+  Platform,
+  Modal,
+  TouchableOpacity,
+} from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -35,14 +46,20 @@ export default function App() {
 
     detectSource.onmessage = (event) => {
       try {
-        const eventData = event.data; // 문자열로 받음
+        const eventData = event.data.toString().toLowerCase(); // 문자열로 받음
         console.log("📡 수신:", eventData);
-  
-        setMessages((prev) => [...prev, { id: Date.now().toString(), message: eventData }]);
-    
+
+        const words = eventData.split(": ");
+        const number = words[0].charAt(words[0].length - 1);
+
+        setMessages((prev) => [
+          ...prev,
+          { id: Date.now().toString(), message: eventData },
+        ]);
+
         // 감지 메시지 확인
-        if (eventData === "Detected") {
-          setModalMessage("⚠️ 말벌 감지"); // 문자열 1개만 필요
+        if (eventData[1] === "detected") {
+          setModalMessage("⚠️ " + number + "번 벌통 말벌 감지"); // 문자열 1개만 필요
           setModalVisible(true);
         }
       } catch (err) {
@@ -54,68 +71,63 @@ export default function App() {
       console.error("❌ 영상 SSE 에러:", err);
       detectSource.close();
     };
-
-    // 2. 음성 기반 감지
-    const voiceSource = new EventSourcePolyfill(
-      "https://actually-live-fly.ngrok-free.app/voice",
-      { heartbeatTimeout: 30000 }
-    );
-
-    voiceSource.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        if (data.status === "detected") {
-          setVoiceDetected(true);
-        }
-      } catch (err) {
-        console.warn("음성 감지 데이터 파싱 실패");
-      }
-    };
-
-    voiceSource.onerror = (err) => {
-      console.error("❌ 음성 SSE 에러:", err);
-      voiceSource.close();
-    };
-
-    return () => {
-      detectSource.close();
-      voiceSource.close();
-    };
   }, []);
+
+  useEffect(() => {
+    if (detectDetected) {
+      const getVoiceSource = async () => {
+        try {
+          const res = await fetch(
+            "https://actually-live-fly.ngrok-free.app/voice"
+          );
+          const data = await res.json();
+
+          if (data.status === "detected") {
+            setVoiceDetected(true);
+          }
+        } catch {
+          console.error("❌ 음성 SSE 에러:", err);
+        }
+      };
+    }
+  }, [detectDetected]);
 
   useEffect(() => {
     checkBothDetected();
   }, [detectDetected, voiceDetected]);
 
   return (
-  <>
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="Home"
-        screenOptions={{
-          headerShown: false,
-        }}
+    <>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName="Home"
+          screenOptions={{
+            headerShown: false,
+          }}
+        >
+          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="LiveCamera" component={LiveCameraScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+      <Modal
+        transparent
+        animationType="fade"
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
       >
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="LiveCamera" component={LiveCameraScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
-    <Modal
-    transparent
-    animationType="fade"
-    visible={modalVisible}
-    onRequestClose={() => setModalVisible(false)}
-  >
-    <View style={styles.overlay}>
-      <View style={styles.modal}>
-        <Text style={styles.modalText}>{modalMessage}</Text>
-        <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.button}>
-          <Text style={styles.buttonText}>확인</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  </Modal>
-  </>
+        <View style={styles.overlay}>
+          <View style={styles.modal}>
+            <Text style={styles.modalText}>{modalMessage}</Text>
+            <TouchableOpacity
+              onPress={() => setModalVisible(false)}
+              style={styles.button}
+            >
+              <Text style={styles.buttonText}>확인</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    </>
   );
 }
 
@@ -134,7 +146,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalText: {
-    fontSize: 18,
+    fontSize: 24,
     fontWeight: "bold",
     color: "#FF0000",
     textAlign: "center",
