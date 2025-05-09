@@ -14,45 +14,78 @@ export default function App() {
   const [error, setError] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+  const [detectDetected, setDetectDetected] = useState(false);
+  const [voiceDetected, setVoiceDetected] = useState(false);
+
+  const checkBothDetected = () => {
+    if (detectDetected && voiceDetected) {
+      setModalMessage("⚠️ 말벌 감지됨 (영상 + 음성)");
+      setModalVisible(true);
+      setDetectDetected(false);
+      setVoiceDetected(false);
+    }
+  };
 
   useEffect(() => {
-    const eventSource = new EventSourcePolyfill(
+    // 1. 영상 기반 감지
+    const detectSource = new EventSourcePolyfill(
       "https://calf-exact-anteater.ngrok-free.app/detect",
       { heartbeatTimeout: 30000 }
     );
 
-    eventSource.onopen = function () {
-      console.log("SSE 연결 성공");
-      setError("");
-    };
-
-    eventSource.onmessage = (event) => {
+    detectSource.onmessage = (event) => {
       try {
-        const eventData = event.data;
-        const newNotification = {
-          id: Date.now().toString(),
-          message: eventData,
-        };
-        console.log(eventData);
-        setMessages((prevMessages) => [...prevMessages, newNotification]);
-
-        if (eventData == "Detected") {
-//           Alert.alert("⚠️ 말벌 감지", eventData, [{ text: "확인" }]);
-setModalVisible(true);
-          setModalMessage("⚠️ 말벌 감지", eventData);
+        const eventData = event.data; // 문자열로 받음
+        console.log("📡 수신:", eventData);
+  
+        setMessages((prev) => [...prev, { id: Date.now().toString(), message: eventData }]);
+    
+        // 감지 메시지 확인
+        if (eventData === "Detected") {
+          setModalMessage("⚠️ 말벌 감지"); // 문자열 1개만 필요
+          setModalVisible(true);
         }
       } catch (err) {
-        console.warn("데이터 파싱 실패, err");
+        console.warn("⚠️ 데이터 파싱 실패:", err);
       }
     };
 
-    eventSource.onerror = (err) => {
-      console.error("SSE 에러:", err);
-      setError("연결에 문제 발생");
+    detectSource.onerror = (err) => {
+      console.error("❌ 영상 SSE 에러:", err);
+      detectSource.close();
+    };
 
-      eventSource.close();
+    // 2. 음성 기반 감지
+    const voiceSource = new EventSourcePolyfill(
+      "https://actually-live-fly.ngrok-free.app/voice",
+      { heartbeatTimeout: 30000 }
+    );
+
+    voiceSource.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.status === "detected") {
+          setVoiceDetected(true);
+        }
+      } catch (err) {
+        console.warn("음성 감지 데이터 파싱 실패");
+      }
+    };
+
+    voiceSource.onerror = (err) => {
+      console.error("❌ 음성 SSE 에러:", err);
+      voiceSource.close();
+    };
+
+    return () => {
+      detectSource.close();
+      voiceSource.close();
     };
   }, []);
+
+  useEffect(() => {
+    checkBothDetected();
+  }, [detectDetected, voiceDetected]);
 
   return (
   <>

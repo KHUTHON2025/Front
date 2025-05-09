@@ -1,7 +1,8 @@
 import { StyleSheet, View, Text, FlatList, SafeAreaView, StatusBar } from "react-native";
 import { useState, useEffect } from "react";
 import HiveCard from "../components/HiveCard";
-import BeeBackground from "../components/BeeBackgrounds"; 
+// import BeeBackground from "../components/BeeBackgrounds"; 
+import GifBackground from "../components/GifBackground";
 
 // Sample data for the beehives
 // const hives = [
@@ -54,7 +55,7 @@ export default function HomeScreen({ navigation }) {
 
   return (
   <View style={{ flex: 1 }}>
-    <BeeBackground />
+    <GifBackground />
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
         <View style={styles.header}>
