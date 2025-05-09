@@ -1,14 +1,5 @@
-import {
-  StyleSheet,
-  View,
-  Text,
-  FlatList,
-  SafeAreaView,
-  StatusBar,
-} from "react-native";
-import HiveCard from "../components/HiveCard";
-import { useEffect, useState } from "react";
-import { EventSourcePolyfill } from "event-source-polyfill";
+import { StyleSheet, View, Text, FlatList, SafeAreaView, StatusBar } from "react-native"
+import HiveCard from "../components/HiveCard"
 
 // Sample data for the beehives
 const hives = [
@@ -18,9 +9,19 @@ const hives = [
   { id: "4", number: 4, status: "Normal", location: "West fence" },
   { id: "5", number: 5, status: "Normal", location: "Center garden" },
   { id: "6", number: 6, status: "Normal", location: "Orchard edge" },
-];
+]
 
 export default function HomeScreen({ navigation }) {
+  // const [hives, setHives] = useState([])
+
+  // // 벌통 데이터 fetch
+  // useEffect(() => {
+  //   fetch("http://YOUR_FASTAPI_IP:8000/api/hives")
+  //     .then((res) => res.json())
+  //     .then((data) => setHives(data))
+  //     .catch((err) => console.error("❌ 벌통 데이터 불러오기 실패:", err))
+  // }, [])
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
@@ -30,24 +31,19 @@ export default function HomeScreen({ navigation }) {
       <FlatList
         data={hives}
         renderItem={({ item }) => (
-          <HiveCard
-            hive={item}
-            onPressCamera={() =>
-              navigation.navigate("LiveCamera", { hiveNumber: item.number })
-            }
-          />
+          <HiveCard hive={item} onPressCamera={() => navigation.navigate("LiveCamera", { hiveNumber: item.number })} />
         )}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
       />
     </SafeAreaView>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#fee599",
   },
   header: {
     padding: 20,
@@ -57,9 +53,9 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#000000",
+    color: "#595959",
   },
   listContent: {
     padding: 16,
   },
-});
+})
