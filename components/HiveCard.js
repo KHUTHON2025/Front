@@ -16,12 +16,15 @@ export default function HiveCard({ hive, onPressCamera }) {
         <Text style={styles.locationLabel}>위치:</Text>
         <Text style={styles.locationText}>{hive.location}</Text>
       </View>
-
-      {isWaspDetected && (
-        <TouchableOpacity style={styles.cameraButton} onPress={onPressCamera}>
-          <Text style={styles.cameraButtonText}>실시간 카메라 확인</Text>
-        </TouchableOpacity>
-      )}
+      <TouchableOpacity
+        style={[
+          styles.cameraButton,
+          isWaspDetected ? styles.alertButton : styles.normalButton,
+        ]}
+        onPress={onPressCamera}
+      >
+        <Text style={styles.cameraButtonText}>실시간 카메라 확인</Text>
+      </TouchableOpacity>
     </View>
   )
 }
@@ -82,10 +85,15 @@ const styles = StyleSheet.create({
     color: "#000000",
   },
   cameraButton: {
-    backgroundColor: "#FF0000",
     padding: 10,
     borderRadius: 4,
     alignItems: "center",
+  },
+  alertButton: {
+    backgroundColor: "#FF0000",
+  },
+  normalButton: {
+    backgroundColor: "#ffc229",
   },
   cameraButtonText: {
     color: "#FFFFFF",

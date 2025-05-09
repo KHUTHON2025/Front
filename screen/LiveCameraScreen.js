@@ -32,11 +32,10 @@ export default function LiveCameraScreen({ route, navigation }) {
 
       <View style={styles.videoContainer}>
         {/* Placeholder for video feed */}
-        <View style={styles.videoFeed}>
-          <Image
-            source={{ uri: "https://via.placeholder.com/350x250/000000/FFCC00?text=Live+Camera+Feed" }}
-            style={styles.videoPlaceholder}
-            resizeMode="cover"
+        <View style={{ width: "100%", aspectRatio: 4 / 3 }}>
+          <WebView
+            source={{ uri: liveUrl }}
+            style={{ flex: 1, borderRadius: 8 }}
           />
         </View>
 
