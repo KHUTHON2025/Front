@@ -5,28 +5,49 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import HomeScreen from "./screen/HomeScreen";
 import LiveCameraScreen from "./screen/LiveCameraScreen";
-import { EventSource } from 'react-native-sse';
+import { EventSourcePolyfill } from "event-source-polyfill";
 
-const Stack = createNativeStackNavigator()
+const Stack = createNativeStackNavigator();
 
 export default function App() {
+  const [messages, setMessages] = useState([]);
+  const [error, setError] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
 
   useEffect(() => {
-    const sse = new EventSource('http://YOUR_FASTAPI_SERVER_IP:8000/events'); 
+    const eventSource = new EventSourcePolyfill(
+      "https://calf-exact-anteater.ngrok-free.app/detect",
+      { heartbeatTimeout: 30000 }
+    );
 
-    sse.addEventListener('message', event => {
-      console.log("🐝 말벌 감지 메시지:", event.data);
-      Alert.alert("⚠️ 말벌 감지", event.data);
-    });
-
-    sse.onerror = (err) => {
-      console.error("❌ SSE 오류 발생:", err);
+    eventSource.onopen = function () {
+      console.log("SSE 연결 성공");
+      setError("");
     };
 
-    return () => {
-      sse.close();
+    eventSource.onmessage = (event) => {
+      try {
+        const eventData = JSON.parse(event.data);
+        const newNotification = {
+          id: Date.now().toString(),
+          message: eventData.message,
+        };
+        setMessages((prevMessages) => [...prevMessages, newNotification]);
+
+        if (eventData.message.toLowerCase().includes("detected")) {
+          Alert.alert("⚠️ 말벌 감지", eventData.message, [{ text: "확인" }]);
+        }
+      } catch (err) {
+        console.warn("데이터 파싱 실패, err");
+      }
+    };
+
+    eventSource.onerror = (err) => {
+      console.error("SSE 에러:", err);
+      setError("연결에 문제 발생");
+
+      eventSource.close();
     };
   }, []);
 
