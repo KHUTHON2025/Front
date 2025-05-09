@@ -1,13 +1,12 @@
-import { View, Text, Dimensions, ActivityIndicator, ScrollView, StyleSheet, Alert, Platform } from 'react-native';
-import { StatusBar } from "expo-status-bar";
-import React, { useEffect, useState, useRef } from "react";
+import { Alert } from "react-native";
+import { useEffect, useState, useRef } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import HomeScreen from "./screen/HomeScreen";
 import LiveCameraScreen from "./screen/LiveCameraScreen";
-import { EventSource } from 'react-native-sse';
+import { EventSourcePolyfill } from "event-source-polyfill";
 
-const Stack = createNativeStackNavigator()
+const Stack = createNativeStackNavigator();
 
 export default function App() {
   useEffect(() => {
