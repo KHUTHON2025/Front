@@ -25,7 +25,7 @@ export default function HomeScreen({ navigation }) {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
       <View style={styles.header}>
-        <Text style={styles.title}>벌통 모니터</Text>
+        <Text style={styles.title}>🐝 벌통 모니터</Text>
       </View>
       <FlatList
         data={hives}
