@@ -62,16 +62,20 @@ export default function HomeScreen({ navigation }) {
         </View>
         <FlatList
           data={hives}
+          numColumns={2} 
+          columnWrapperStyle={styles.row}
           renderItem={({ item }) => (
-            <HiveCard
-              hive={item}
-              onPressCamera={() =>
-                navigation.navigate("LiveCamera", {
-                  hiveNumber: item.number,
-                  liveUrl: item.live_url,
-                })
-              }
-            />
+            <View style={{ flex: 1, padding: 8 }}>
+              <HiveCard
+                hive={item}
+                onPressCamera={() =>
+                  navigation.navigate("LiveCamera", {
+                    hiveNumber: item.number,
+                    liveUrl: item.live_url,
+                  })
+                }
+              />
+            </View>
           )}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.listContent}
@@ -95,6 +99,13 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     color: "#595959",
+  },
+  listContent: {
+    padding: 16,
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   listContent: {
     padding: 16,
